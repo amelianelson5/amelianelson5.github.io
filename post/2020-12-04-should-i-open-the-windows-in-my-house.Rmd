@@ -113,5 +113,5 @@ Here is our command!
 WindowAlert()
 ```
 
-
+Right now (December 4th, 2020) I should NOT open my windows because it is too cold outside!
 
