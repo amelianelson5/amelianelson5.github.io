@@ -21,6 +21,15 @@ print(5+5) ## 10  </description>
     </item>
     
     <item>
+      <title>Should I Open the Windows in my House?</title>
+      <link>/post/2020/12/04/should-i-open-the-windows-in-my-house/</link>
+      <pubDate>Fri, 04 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2020/12/04/should-i-open-the-windows-in-my-house/</guid>
+      <description>Since we are in the midst of the COVID-19 pandemic, my roommates and I have been thinking a lot about air circulation. We got a CO2 monitor (since CO2 is a good proxy for how well the air is circulating in buildings) and we discovered that the CO2 in our house is pretty high! Not good! So we&#39;ve been opening up the windows a lot lately, but have struggled to find a good time to do so given Texas&#39;s unpredictable weather.</description>
+    </item>
+    
+    <item>
       <title>Hello R Markdown</title>
       <link>/post/2015/07/23/hello-r-markdown/</link>
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>

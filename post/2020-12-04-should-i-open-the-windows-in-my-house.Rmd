@@ -1,0 +1,117 @@
+---
+title: Should I Open the Windows in my House?
+author: ''
+date: '2020-12-04'
+slug: should-i-open-the-windows-in-my-house
+categories: []
+tags: []
+description: ''
+---
+
+Since we are in the midst of the COVID-19 pandemic, my roommates and I have been thinking a lot about air circulation. We got a CO2 monitor (since CO2 is a good proxy for how well the air is circulating in buildings) and we discovered that the CO2 in our house is pretty high! Not good! So we've been opening up the windows a lot lately, but have struggled to find a good time to do so given Texas's unpredictable weather. I thought it would be fun to create a function in python that uses weather data from where I live in Austin to help us decide if we should open the windows or not.
+
+```{python}
+import pandas as pd 
+import numpy as np
+import matplotlib.pyplot as plt 
+import math 
+```
+
+Let's add weather data from my location in Austin!
+```{python}
+import urllib
+import urllib.request
+
+url = 'https://tgftp.nws.noaa.gov/data/observations/metar/decoded/KATT.TXT'
+data = urllib.request.urlopen(url)
+
+lines = data.read() # put all words from website into string
+weather = lines.decode('utf-8') # decode bytes into normal strings
+print(weather)
+
+weather2 = weather.split() # splits the text into a list of words 
+print(weather2)
+```
+
+
+Here I will make a function that sets optimal weather conditions and lets me know at any given time if I should open the windows in my house!
+```{python}
+##Updated Window Alert Function
+def WindowAlert():
+  import urllib
+  import urllib.request
+  import sched, time
+  import datetime
+
+
+  url = 'https://tgftp.nws.noaa.gov/data/observations/metar/decoded/KATT.TXT'
+  data = urllib.request.urlopen(url)
+
+  lines = data.read() # put all words from website into string
+  weather = lines.decode('utf-8') # decode bytes into normal strings
+  #print(weather)
+
+  weather2 = weather.split() # splits the text into a list of words 
+  #print(weather2)
+
+
+  windstart = ()
+  for k,text in enumerate(weather2):
+      
+      if 'MPH' in text:
+        windstart = k
+        windspeed = int(weather2[windstart-1])
+        #print('index of wind:',windstart)
+
+      if 'MPH' not in text:
+        windspeed = 0
+
+      if 'Temperature' in text:
+        tempstart = k
+        temperature = float(weather2[tempstart+1])
+        #print('index of temp', tempstart)
+
+      if 'Humidity' in text:
+        humistart = k
+        relhumidity = weather2[humistart+1]
+        relhumidity = relhumidity.replace('%','')
+        relhumidity = int(relhumidity)
+        #print('index of humi', humistart,'\n')
+
+
+     #print('Wind Speed is', windspeed, 'MPH')
+     #print('Temperature is', temperature, '°F')
+     #print('Relative humidity is', relhumidity, '%')
+
+        #Ideal conditions
+        if (windspeed <= 10) and (temperature >= 68 and temperature <= 78) and (relhumidity <= 50):
+          print("Open the window! The winds are", windspeed, "MPH,", "the temperature is", temperature, "°F," "and the relative humidity is", relhumidity, "%.")
+
+        #When not true
+        else:
+          print("Don't open the window!")
+
+        #Too windy
+        if (windspeed >10): 
+          print("Too windy.", windspeed, "MPH.")
+
+        #Too cold
+        if (temperature < 68): 
+          print("Too cold, at", temperature, "°F.")
+
+        #Too warm
+        if (temperature > 78): 
+          print("Too warm, at", temperature, "°F")
+
+        #Too humid
+        if (relhumidity > 50): 
+          print("Too humid, at", relhumidity, "%.")
+```
+
+Here is our command!
+```{python}
+WindowAlert()
+```
+
+
+

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Amelia Nelson" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../../img/favicon.ico">
+    <title>Should I Open the Windows in my House?</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../../../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../../../../post/">BLOG</a></li>
+        
+        <li><a href="../../../../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../../../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../../../../post/2020/12/04/should-i-open-the-windows-in-my-house/">Should I Open the Windows in my House?</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         December 4, 2020 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<p>Since we are in the midst of the COVID-19 pandemic, my roommates and I have been thinking a lot about air circulation. We got a CO2 monitor (since CO2 is a good proxy for how well the air is circulating in buildings) and we discovered that the CO2 in our house is pretty high! Not good! So we've been opening up the windows a lot lately, but have struggled to find a good time to do so given Texas's unpredictable weather. I thought it would be fun to create a function in python that uses weather data from where I live in Austin to help us decide if we should open the windows or not.</p>
+<pre class="python"><code>import pandas as pd 
+import numpy as np
+import matplotlib.pyplot as plt 
+import math </code></pre>
+<p>Let's add weather data from my location in Austin!</p>
+<pre class="python"><code>import urllib
+import urllib.request
+
+url = &#39;https://tgftp.nws.noaa.gov/data/observations/metar/decoded/KATT.TXT&#39;
+data = urllib.request.urlopen(url)
+
+lines = data.read() # put all words from website into string
+weather = lines.decode(&#39;utf-8&#39;) # decode bytes into normal strings
+print(weather)</code></pre>
+<pre><code>## CAMP MABRY/AUSTIN CITY ASOS, TX, United States (KATT) 30-19N 097-46W
+## Dec 04, 2020 - 04:51 PM EST / 2020.12.04 2151 UTC
+## Wind: Variable at 5 MPH (4 KT):0
+## Visibility: 10 mile(s):0
+## Sky conditions: clear
+## Temperature: 60.1 F (15.6 C)
+## Dew Point: 28.9 F (-1.7 C)
+## Relative Humidity: 30%
+## Pressure (altimeter): 30.2 in. Hg (1022 hPa)
+## ob: KATT 042151Z AUTO VRB04KT 10SM CLR 16/M02 A3020 RMK AO2 SLP229 T01561017 
+## cycle: 22</code></pre>
+<pre class="python"><code>weather2 = weather.split() # splits the text into a list of words 
+print(weather2)</code></pre>
+<pre><code>## [&#39;CAMP&#39;, &#39;MABRY/AUSTIN&#39;, &#39;CITY&#39;, &#39;ASOS,&#39;, &#39;TX,&#39;, &#39;United&#39;, &#39;States&#39;, &#39;(KATT)&#39;, &#39;30-19N&#39;, &#39;097-46W&#39;, &#39;Dec&#39;, &#39;04,&#39;, &#39;2020&#39;, &#39;-&#39;, &#39;04:51&#39;, &#39;PM&#39;, &#39;EST&#39;, &#39;/&#39;, &#39;2020.12.04&#39;, &#39;2151&#39;, &#39;UTC&#39;, &#39;Wind:&#39;, &#39;Variable&#39;, &#39;at&#39;, &#39;5&#39;, &#39;MPH&#39;, &#39;(4&#39;, &#39;KT):0&#39;, &#39;Visibility:&#39;, &#39;10&#39;, &#39;mile(s):0&#39;, &#39;Sky&#39;, &#39;conditions:&#39;, &#39;clear&#39;, &#39;Temperature:&#39;, &#39;60.1&#39;, &#39;F&#39;, &#39;(15.6&#39;, &#39;C)&#39;, &#39;Dew&#39;, &#39;Point:&#39;, &#39;28.9&#39;, &#39;F&#39;, &#39;(-1.7&#39;, &#39;C)&#39;, &#39;Relative&#39;, &#39;Humidity:&#39;, &#39;30%&#39;, &#39;Pressure&#39;, &#39;(altimeter):&#39;, &#39;30.2&#39;, &#39;in.&#39;, &#39;Hg&#39;, &#39;(1022&#39;, &#39;hPa)&#39;, &#39;ob:&#39;, &#39;KATT&#39;, &#39;042151Z&#39;, &#39;AUTO&#39;, &#39;VRB04KT&#39;, &#39;10SM&#39;, &#39;CLR&#39;, &#39;16/M02&#39;, &#39;A3020&#39;, &#39;RMK&#39;, &#39;AO2&#39;, &#39;SLP229&#39;, &#39;T01561017&#39;, &#39;cycle:&#39;, &#39;22&#39;]</code></pre>
+<p>Here I will make a function that sets optimal weather conditions and lets me know at any given time if I should open the windows in my house!</p>
+<pre class="python"><code>##Updated Window Alert Function
+def WindowAlert():
+  import urllib
+  import urllib.request
+  import sched, time
+  import datetime
+
+
+  url = &#39;https://tgftp.nws.noaa.gov/data/observations/metar/decoded/KATT.TXT&#39;
+  data = urllib.request.urlopen(url)
+
+  lines = data.read() # put all words from website into string
+  weather = lines.decode(&#39;utf-8&#39;) # decode bytes into normal strings
+  #print(weather)
+
+  weather2 = weather.split() # splits the text into a list of words 
+  #print(weather2)
+
+
+  windstart = ()
+  for k,text in enumerate(weather2):
+      
+      if &#39;MPH&#39; in text:
+        windstart = k
+        windspeed = int(weather2[windstart-1])
+        #print(&#39;index of wind:&#39;,windstart)
+
+      if &#39;MPH&#39; not in text:
+        windspeed = 0
+
+      if &#39;Temperature&#39; in text:
+        tempstart = k
+        temperature = float(weather2[tempstart+1])
+        #print(&#39;index of temp&#39;, tempstart)
+
+      if &#39;Humidity&#39; in text:
+        humistart = k
+        relhumidity = weather2[humistart+1]
+        relhumidity = relhumidity.replace(&#39;%&#39;,&#39;&#39;)
+        relhumidity = int(relhumidity)
+        #print(&#39;index of humi&#39;, humistart,&#39;\n&#39;)
+
+     #print(&#39;Wind Speed is&#39;, windspeed, &#39;MPH&#39;)
+     #print(&#39;Temperature is&#39;, temperature, &#39;°F&#39;)
+     #print(&#39;Relative humidity is&#39;, relhumidity, &#39;%&#39;)
+
+        #Ideal conditions
+        if (windspeed &lt;= 10) and (temperature &gt;= 68 and temperature &lt;= 78) and (relhumidity &lt;= 50):
+          print(&quot;Open the window! The winds are&quot;, windspeed, &quot;MPH,&quot;, &quot;the temperature is&quot;, temperature, &quot;°F,&quot; &quot;and the relative humidity is&quot;, relhumidity, &quot;%.&quot;)
+
+        #When not true
+        else:
+          print(&quot;Don&#39;t open the window!&quot;)
+
+        #Too windy
+        if (windspeed &gt;10): 
+          print(&quot;Too windy.&quot;, windspeed, &quot;MPH.&quot;)
+
+        #Too cold
+        if (temperature &lt; 68): 
+          print(&quot;Too cold, at&quot;, temperature, &quot;°F.&quot;)
+
+        #Too warm
+        if (temperature &gt; 78): 
+          print(&quot;Too warm, at&quot;, temperature, &quot;°F&quot;)
+
+        #Too humid
+        if (relhumidity &gt; 50): 
+          print(&quot;Too humid, at&quot;, relhumidity, &quot;%.&quot;)</code></pre>
+<p>Here is our command!</p>
+<pre class="python"><code>WindowAlert()</code></pre>
+<pre><code>## Don&#39;t open the window!
+## Too cold, at 60.1 °F.</code></pre>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../../../../js/docs.min.js"></script>
+<script src="../../../../../js/main.js"></script>
+
+<script src="../../../../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>
