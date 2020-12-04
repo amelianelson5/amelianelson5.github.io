@@ -1,0 +1,25 @@
+---
+title: My First Blog Post
+author: ''
+date: '2020-12-04'
+slug: my-first-blog-post
+categories: []
+tags: []
+description: ''
+---
+
+[Link to project 1](/projects/project1/)
+
+[Link to google](https://www.google.com)
+
+R code chunk
+```{r}
+5+5
+```
+
+Python code chunk
+```{python}
+print(5+5)
+```
+
+![](/post/2020-12-04-my-first-blog-post_files/heliconius-charithonia-13179ee5-6bac-442b-8ac3-433bb8e86b3-resize-750.jpg)

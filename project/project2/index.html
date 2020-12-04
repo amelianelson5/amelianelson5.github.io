@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Amelia Nelson" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 2: Modeling, Testing, and Predicting</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project2/">Project 2: Modeling, Testing, and Predicting</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>My data comes from a study that tested if using formalin to preserve fish in biological collection causes differents to their size and weight over time. Since many biologists rely on these collections to conduct research, it is important to know that this method is reliable at accurately preserving collected fish. The main variables include fish sex, days since preservation, standard length, fork length, and weight. There are 1,008 observations in this data set.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.1
+## ✓ tidyr   1.1.1     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>data &lt;- read.csv(&quot;Delta_Smelt_formalin_preservation_Slater_etal_2020.csv&quot;)
+
+
+data1&lt;-data%&gt;%mutate(preservation_cat = case_when(preservation_day&gt;1000 ~ &quot;high&quot;,
+                                            preservation_day&lt;=1000 &amp; 100&lt;=preservation_day ~ &quot;med&quot;,
+                                            preservation_day&lt;100 ~ &quot;low&quot;))</code></pre>
+<p>With this code, I have added another categorial variable that separates &quot;preservation day&quot; into three categories.</p>
+</div>
+<div id="manova-test" class="section level2">
+<h2>Manova Test</h2>
+<pre class="r"><code>man&lt;-manova(cbind(fork_length_mm, standard_length_mm, weight_g)~preservation_cat, data=data1)
+summary(man)</code></pre>
+<pre><code>##                   Df  Pillai approx F num Df den Df    Pr(&gt;F)    
+## preservation_cat   2 0.05053    8.545      6   1978 3.454e-09 ***
+## Residuals        990                                             
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(man)</code></pre>
+<pre><code>##  Response fork_length_mm :
+##                   Df Sum Sq Mean Sq F value Pr(&gt;F)
+## preservation_cat   2     13   6.344  0.1276 0.8802
+## Residuals        990  49199  49.696               
+## 
+##  Response standard_length_mm :
+##                   Df Sum Sq Mean Sq F value Pr(&gt;F)
+## preservation_cat   2     50  25.091  0.6017 0.5481
+## Residuals        990  41284  41.701               
+## 
+##  Response weight_g :
+##                   Df  Sum Sq Mean Sq F value Pr(&gt;F)
+## preservation_cat   2    0.16 0.07838  0.0464 0.9546
+## Residuals        990 1671.70 1.68859               
+## 
+## 15 observations deleted due to missingness</code></pre>
+<pre class="r"><code>pairwise.t.test(data1$standard_length_mm,data1$preservation_cat, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data1$standard_length_mm and data1$preservation_cat 
+## 
+##     high low 
+## low 0.32 -   
+## med 0.91 0.30
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data1$fork_length_mm,data1$preservation_cat, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data1$fork_length_mm and data1$preservation_cat 
+## 
+##     high low 
+## low 0.85 -   
+## med 0.83 0.61
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data1$weight_g,data1$preservation_cat, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data1$weight_g and data1$preservation_cat 
+## 
+##     high low 
+## low 0.66 -   
+## med 0.87 0.75
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>## Assumptions
+library(rstatix)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rstatix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre class="r"><code>group &lt;- data1$preservation_cat
+DVs &lt;- data1 %&gt;% select(fork_length_mm, standard_length_mm, weight_g)
+
+#Test multivariate normality for each group (null: assumption met)
+sapply(split(DVs,group), mshapiro_test)</code></pre>
+<pre><code>##           high         low          med         
+## statistic 0.8958143    0.981355     0.8695067   
+## p.value   5.061135e-10 7.895027e-06 4.479271e-16</code></pre>
+<pre class="r"><code>#If any p&lt;.05, stop. If not, test homogeneity of covariance matrices
+
+#Box&#39;s M test (null: assumption met)
+box_m(DVs, group)</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   statistic p.value parameter method                                            
+##       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;                                             
+## 1        NA      NA        12 Box&#39;s M-test for Homogeneity of Covariance Matric…</code></pre>
+<pre class="r"><code>#View covariance matrices for each group
+lapply(split(DVs,group), cov)</code></pre>
+<pre><code>## $high
+##                    fork_length_mm standard_length_mm weight_g
+## fork_length_mm                 NA                 NA       NA
+## standard_length_mm             NA          41.510561 7.897746
+## weight_g                       NA           7.897746 1.689807
+## 
+## $low
+##                    fork_length_mm standard_length_mm weight_g
+## fork_length_mm           49.78313          45.380681 8.377500
+## standard_length_mm       45.38068          41.783747 7.721684
+## weight_g                  8.37750           7.721684 1.664066
+## 
+## $med
+##                    fork_length_mm standard_length_mm weight_g
+## fork_length_mm                 NA                 NA       NA
+## standard_length_mm             NA          41.797797 7.934586
+## weight_g                       NA           7.934586 1.685410</code></pre>
+<p>I have performed seven tests. There is a 0.302 chance that we have made a type I error. We should adjust the significance value to 0.007. However, there are still no significant differences with the adjusted significance value. This means that time since being preserved does not have an affect on these variables (which is a good thing!). However, when testing for multivariate normality for each group, we were not able to pass our assumptions.</p>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>Randomization Test</h2>
+<pre class="r"><code>rand_dist&lt;-vector()
+for(i in 1:5000){
+  new&lt;-data.frame(weight=sample(data1$weight_g),preservation_cat=data1$preservation_cat)
+  rand_dist[i]&lt;-mean(new[new$preservation_cat==&quot;low&quot;,]$weight)-   
+              mean(new[new$preservation_cat==&quot;high&quot;,]$weight)}
+{hist(rand_dist,main=&quot;&quot;,ylab=&quot;&quot;); abline(v = c(-0.0489, 0.0489),col=&quot;red&quot;)}</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>mean(rand_dist&gt;0.489 | rand_dist&lt; -0.0489)</code></pre>
+<pre><code>## [1] 0.3256</code></pre>
+<pre class="r"><code>data1%&gt;%group_by(preservation_cat)%&gt;%summarize(means=mean(weight_g))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   preservation_cat means
+##   &lt;chr&gt;            &lt;dbl&gt;
+## 1 high              3.79
+## 2 low               3.84
+## 3 med               3.81</code></pre>
+<pre class="r"><code>3.841306-3.792418</code></pre>
+<pre><code>## [1] 0.048888</code></pre>
+<p>In this randomization test, the null hypothesis is that there is no difference in means between samples that have been preserved for a high amount of time vs those that have only been preserved for a short amount of time. The alternative hypothesis is that there is a difference. The results from our test show that acheiving the null hypthosis by chance is not all that unlikely. There is close to a .90 chance that this result could have been obtained by chance. You can clearly see this when looking at the mean differences between each preservation category: there is only a very small difference in size between those in the high and low class.</p>
+</div>
+<div id="linear-regression" class="section level2">
+<h2>Linear Regression</h2>
+<pre class="r"><code>library(lmtest)</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>library(sandwich)
+data1$standard_length_mm_c &lt;- data1$standard_length_mm - mean(data1$standard_length_mm, na.rm=T)
+mod&lt;- lm(weight_g~standard_length_mm_c*sex, data=data1)
+summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = weight_g ~ standard_length_mm_c * sex, data = data1)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.9542 -0.2523 -0.0204  0.2291  1.7677 
+## 
+## Coefficients:
+##                            Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                3.836395   0.023514 163.152  &lt; 2e-16 ***
+## standard_length_mm_c       0.195525   0.003530  55.384  &lt; 2e-16 ***
+## sexM                      -0.100798   0.032479  -3.103  0.00197 ** 
+## standard_length_mm_c:sexM -0.024433   0.005027  -4.861 1.36e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4504 on 1004 degrees of freedom
+## Multiple R-squared:  0.8791, Adjusted R-squared:  0.8788 
+## F-statistic:  2434 on 3 and 1004 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>data1 %&gt;% filter(!is.na(weight_g), !is.na(standard_length_mm_c), !is.na(sex)) %&gt;%
+  ggplot(aes(standard_length_mm_c, weight_g, color = sex)) + geom_point()+
+  geom_smooth(method=&quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>#assumptions
+breaks &lt;- seq(min(data1$weight_g), max(data1$weight_g, len=8))
+ggplot(data1, aes(weight_g, standard_length_mm_c)) + 
+  geom_point(alpha=.3) + 
+  theme_bw()+ geom_vline(xintercept=breaks, lty=2,color=&#39;gray50&#39;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>resids&lt;-lm(weight_g~standard_length_mm_c, data=data1)$residuals
+fitvals &lt;- lm(weight_g~standard_length_mm_c, data=data1)$fitted.values
+ggplot()+geom_histogram(aes(resids),bins=10) # appears somewhat normal, with a few outliers at the upper end</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code>ks.test(resids, &quot;pnorm&quot;, mean=0, sd(resids)) #we reject the null hypothesis of normality</code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  resids
+## D = 0.063159, p-value = 0.0006434
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>bptest(mod) # p &lt; 0.05 we reject the null hypothesis of homoscedasticity</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  mod
+## BP = 248.97, df = 3, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Adding robust standard errors
+coeftest(mod, vcov = vcovHC(mod))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                             Estimate Std. Error  t value  Pr(&gt;|t|)    
+## (Intercept)                3.8363946  0.0198898 192.8824 &lt; 2.2e-16 ***
+## standard_length_mm_c       0.1955249  0.0056468  34.6256 &lt; 2.2e-16 ***
+## sexM                      -0.1007980  0.0277525  -3.6320 0.0002954 ***
+## standard_length_mm_c:sexM -0.0244335  0.0065731  -3.7172 0.0002126 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># R-squared
+sum((fitvals-mean(data1$weight_g))^2)/sum((data1$weight_g-mean(data1$weight_g))^2)</code></pre>
+<pre><code>## [1] 0.8750813</code></pre>
+<p>For samples of average standard length that are female, the predicted weight is 3.836. For every 1-unit increase in standard length, there is a 0.195 increase in predicted weight. For samples of an average standard length, those that are female are predicted to have a weight that is 0.1 gram lower than for males. The slope of standard length on weight for males is 0.02 lower than for females. The standard errors do not change much when using robust standard errors and everything remains significant. The results show that there are significant differences in predicted weight based on sex and standard length, and this difference is slight more stark for females compared to males (as seen by the steeper slope for females in the graph). Our model explains about 88% of variation.</p>
+</div>
+<div id="bootstrap-sample-errors" class="section level1">
+<h1>Bootstrap Sample Errors</h1>
+<div id="classification-diagnostics-function" class="section level2">
+<h2>Classification diagnostics function</h2>
+<pre class="r"><code>class_diag&lt;-function(probs,truth){
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  f1=2*(sens*ppv)/(sens+ppv)
+
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE){
+    truth&lt;-as.numeric(truth)-1}
+  
+  #CALCULATE EXACT AUC
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,f1,auc)
+}</code></pre>
+<pre class="r"><code>fit&lt;-lm(weight_g~standard_length_mm_c*sex,data=data1) 
+resids&lt;-fit$residuals 
+fitted&lt;-fit$fitted.values 
+resid_resamp&lt;-replicate(5000,{
+  new_resids&lt;-sample(resids,replace=TRUE) #resample resids w/ replacement
+  data1$new_y&lt;-fitted+new_resids #add new resids to yhats to get new &quot;data&quot;
+  fit&lt;-lm(new_y~standard_length_mm_c*sex,data=data1) #refit model
+coef(fit) #save coefficient estimates (b0, b1, etc)
+})
+resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) standard_length_mm_c      sexM standard_length_mm_c:sexM
+## 1  0.02327334          0.003524948 0.0324503               0.005031358</code></pre>
+<p>Like the robust standard errors, the bootstrap standard errors show very little difference compared to our original standard errors. As such, the p-values are likely to stay similar and significant.</p>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
+<pre class="r"><code>data1$weight_g_c &lt;- data1$weight_g - mean(data1$weight_g, na.rm=T)
+log.fit &lt;- glm(sex~weight_g_c+standard_length_mm_c, data=data1, family=&quot;binomial&quot;)
+coeftest(log.fit) </code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                       Estimate Std. Error z value  Pr(&gt;|z|)    
+## (Intercept)           0.014645   0.075171  0.1948 0.8455360    
+## weight_g_c           -0.739566   0.199913 -3.6994 0.0002161 ***
+## standard_length_mm_c -0.058673   0.036381 -1.6127 0.1068021    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(log.fit))</code></pre>
+<pre><code>##          (Intercept)           weight_g_c standard_length_mm_c 
+##            1.0147524            0.4773208            0.9430155</code></pre>
+<pre class="r"><code>prob &lt;- predict(log.fit, type=&quot;response&quot;)
+table(predict=as.numeric(prob&gt;.5),truth=data1$sex)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict    F    M  Sum
+##     0    306   66  372
+##     1    177  459  636
+##     Sum  483  525 1008</code></pre>
+<pre class="r"><code>class_diag(prob, data1$sex)</code></pre>
+<pre><code>##         acc      sens      spec       ppv        f1       auc
+## M 0.7589286 0.8742857 0.6335404 0.7216981 0.7906977 0.8106596</code></pre>
+<pre class="r"><code>data1$logit&lt;-predict(log.fit,type=&quot;link&quot;)
+data1%&gt;%ggplot()+geom_density(aes(logit,color=sex,fill=sex), alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab(&quot;predictor (logit)&quot;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># ROC curve
+library(plotROC)
+data1$prob&lt;-predict(log.fit,type=&quot;response&quot;)
+ROC&lt;-ggplot(data1)+geom_roc(aes(d=sex,m=prob), n.cuts=0)
+ROC</code></pre>
+<pre><code>## Warning in verify_d(data$d): D not labeled 0/1, assuming F = 0 and M = 1!</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-7-2.png" width="672" /> In our logistic regression, the predicted odds of being male for those with an average standard length and weight is 1.015. Controlling for standard length, the odds significantly change by a factor of 0.477 with every 1-unit increase in weight. Controlling for weight, the odds change by a factor of 0.943 for every 1-unit increase in standard length. The accuracy of our model is about 76%. Sensitivity is 87% and specificity is about 63% (somewhat low, meaning that true negatives are low). Precision is about 72% meaning that 72% of individuals classified as male were actually male. Our AUC is 0.81, which means that although there is some error, our model is fairly good at predicting male vs female. Our ggplot shows that there is some overlap between the predictors for male and female, which explains the error we see.</p>
+</div>
+<div id="logistic-regression-ii" class="section level2">
+<h2>Logistic Regression II</h2>
+<pre class="r"><code>data2&lt;-data1%&gt;%select(-flag,-process_date,-processor_id, -total_length_mm, -logit, -prob, -specimen_no, -standard_length_mm, -weight_g)
+data2&lt;-data2%&gt;%na.omit()
+log.fit2 &lt;- glm(sex~., data=data2, family=&quot;binomial&quot;)
+coeftest(log.fit2) </code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                         Estimate  Std. Error z value  Pr(&gt;|z|)    
+## (Intercept)          -2.98175606  7.85725463 -0.3795 0.7043234    
+## preservation_day      0.00001024  0.00034911  0.0293 0.9765994    
+## fork_length_mm        0.04228423  0.10830522  0.3904 0.6962280    
+## preservation_catlow  -0.01807322  0.59327835 -0.0305 0.9756976    
+## preservation_catmed  -0.03085721  0.52911825 -0.0583 0.9534952    
+## standard_length_mm_c -0.11369902  0.12315767 -0.9232 0.3559036    
+## weight_g_c           -0.71931054  0.20190873 -3.5626 0.0003673 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(log.fit2))</code></pre>
+<pre><code>##          (Intercept)     preservation_day       fork_length_mm 
+##           0.05070372           1.00001024           1.04319094 
+##  preservation_catlow  preservation_catmed standard_length_mm_c 
+##           0.98208912           0.96961401           0.89252655 
+##           weight_g_c 
+##           0.48708797</code></pre>
+<pre class="r"><code>prob &lt;- predict(log.fit2, type=&quot;response&quot;)
+class_diag(prob, data2$sex)</code></pre>
+<pre><code>##         acc      sens      spec       ppv        f1       auc
+## M 0.7633434 0.8740458 0.6396588 0.7304625 0.7958297 0.8168916</code></pre>
+<p>This model shows similar relationships on sex than our last one (with weight being a significant predictor). The accuracy of our model is about 76%. Sensitivity is 87% and specificity is about 64% (somewhat low, meaning that true negatives are low). Precision is about 73% meaning that 73% of individuals classified as male were actually male. Our AUC is 0.82, which is very similar to the AUC of our last logistic model and a relatively good value for considering the accuracy of this model.</p>
+</div>
+<div id="fold-cv" class="section level2">
+<h2>10-fold CV</h2>
+<pre class="r"><code>k=10
+
+data &lt;- data2 %&gt;% sample_frac #put rows of dataset in random order
+folds &lt;- ntile(1:nrow(data),n=10) #create fold labels
+
+diags&lt;-NULL
+for(i in 1:k){
+  train &lt;- data[folds!=i,] #create training set (all but fold i)
+  test &lt;- data[folds==i,] #create test set (just fold i)
+  truth &lt;- test$sex #save truth labels from fold i
+  
+  fit &lt;- glm(sex~(.)^2, data=train, family=&quot;binomial&quot;)
+  probs &lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+  
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv        f1       auc
+## 1 0.7514343 0.7656964 0.7403546 0.7638914 0.7626238 0.8219673</code></pre>
+<p>Most of our classification diagnostics did not change very much when doing 10-fold CV. One notable difference is the slightly higher specificity for this CV (increasing to 72% from 64% from the in-sample metrics). However, the AUC did not substantial decrease for our CV. The AUC remained at practically the same value, meaning that there is likely very little overfitting in our model.</p>
+</div>
+<div id="lasso" class="section level2">
+<h2>Lasso</h2>
+<pre class="r"><code>library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 4.0-2</code></pre>
+<pre class="r"><code>y&lt;-as.matrix(data2$sex)
+preds&lt;-model.matrix(log.fit2)[,-1]
+cv &lt;- cv.glmnet(preds,y, family=&quot;binomial&quot;)
+lasso_fit&lt;-glmnet(preds,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+coef(lasso_fit)</code></pre>
+<pre><code>## 7 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                               s0
+## (Intercept)           0.10014823
+## preservation_day      .         
+## fork_length_mm        .         
+## preservation_catlow   .         
+## preservation_catmed   .         
+## standard_length_mm_c -0.06359875
+## weight_g_c           -0.39256550</code></pre>
+<pre class="r"><code># 10-fold CV with lasso selected variables
+k=10
+
+data &lt;- data2 %&gt;% sample_frac #put rows of dataset in random order
+folds &lt;- ntile(1:nrow(data),n=10) #create fold labels
+
+diags&lt;-NULL
+for(i in 1:k){
+  train &lt;- data[folds!=i,] #create training set (all but fold i)
+  test &lt;- data[folds==i,] #create test set (just fold i)
+  truth &lt;- test$sex #save truth labels from fold i
+  
+  fit &lt;- glm(sex~standard_length_mm_c+weight_g_c, data=train, family=&quot;binomial&quot;)
+  probs &lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+  
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv        f1       auc
+## 1 0.7592626 0.8769717 0.6321642 0.7258482 0.7924355 0.8187399</code></pre>
+<p>The variables contained after performing lasso were standard length and weight. This makes sense because weight had a significant effect on the predicted odds of being male and standard length had a nearly signficant effect on the odds of being male. When we perform a 10-fold CV using only the variables that lasso selected, the AUC is 0.814. It does not change very much compared to the AUC from our previous 10-fold CV and the in-sample metrics. This confirms that our original model does not have a lot of overfitting.</p>
+</div>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

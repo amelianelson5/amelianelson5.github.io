@@ -1,0 +1,137 @@
+species_name,adult_body_mass_g,female_body_mass_g,male_body_mass_g
+Acanthiza pusilla,7.6,7.5,8.6
+Aethopyga gouldiae,6.125,5,7.25
+Aimophila carpalis,15.3,15,15
+Aimophila ruficeps,18.75,17.925,19.3
+Amazona finschi,302,NA,NA
+Anas discors,398.5,395,402
+Buteo buteo,878.25,945.75,781
+Calocitta colliei,223.5,NA,NA
+Catharus guttatus,30.55,NA,NA
+Charadrius alexandrinus,42.3,46.1,44
+Colinus virginianus,173.3333333,117,150
+Colius colius,41.45,45,NA
+Coryphospingus cucullatus,14.1,NA,NA
+Cossypha caffra,28.475,25.5,29.45
+Culicicapa ceylonensis,7.8,7.8,NA
+Cyanocorax beecheii,194,NA,NA
+Dicrurus macrocercus,48.5,46,51
+Diuca diuca,36.4,NA,NA
+Elaenia albiceps,15.55,NA,NA
+Elaenia parvirostris,13.85,28.3,NA
+Empidonax oberholseri,10.4,NA,NA
+Euplectes progne,35.525,32,41.6
+Eurystomus orientalis,148.3833333,147.25,134.7
+Geococcyx californianus,376,286.15,319.1
+Gymnogyps californianus,8800,8100,8800
+Haematopus bachmani,555,548.5,542
+Hirundo neoxena,15,16.5,NA
+Hylocharis xantusii,3.45,3.4,3.5
+Icterus bullockii,35.225,33.2,34.7
+Ictinia mississippiensis,281,311,245
+Laniarius ferrugineus,47.4,52.75,58
+Lessonia rufa,13.45,NA,NA
+Megaceryle alcyon,152.1666667,154.3,150.8
+Milvago chimango,296,NA,NA
+Mimus polyglottos,48.5,46.4,50.5
+Molothrus ater,42.55,37.3,47.5
+Myadestes townsendi,33.475,32.6,32.4
+Pachycephala pectoralis,32.7,32.425,33.775
+Parula americana,7.9,7.65,7.8
+Pelecanus erythrorhynchos,6129.5,4970,6665
+Phaethon rubricauda,645,220.2,218.7
+Phoebastria immutabilis,3050,2990,3310
+Phrygilus unicolor,21.9,NA,NA
+Phylloscopus ruficapilla,7.7,NA,NA
+Picoides arizonae,44.05,44,43.75
+Pipilo fuscus,44.89166667,47.4,50.45
+Polioptila caerulea,6.125,6.4,6.4
+Pycnonotus nigricans,30.8,NA,NA
+Pyrrhocoma ruficeps,15.3,NA,NA
+Rallus elegans,360.5,277,360.5
+Riparia riparia,13.4,14.35,13.325
+Rollandia rolland,248.5,344.5,240
+Saltator aurantiirostris,45,46.15,38.975
+Sayornis phoebe,19.7,18.9,NA
+Serinus flaviventris,16.3,16.45,17.5
+Serpophaga nigricans,8.5,NA,NA
+Sporophila caerulescens,9.825,9.375,10.275
+Stelgidopteryx serripennis,15.8,13.3,14.5
+Sterna elegans,258.3,NA,NA
+Thryothorus ludovicianus,19.56666667,18.7,21.2
+Todiramphus sanctus,53.95,45.45,45.1
+Toxostoma curvirostre,78.7,75.8,80.9
+Toxostoma longirostre,67.65,NA,NA
+Tregellasia capito,13.9,12.2,14.4
+Trochocercus cyanomelas,10.2,10.1,10.2
+Turdus merula,102,97.5,98.3
+Turdus migratorius,78.78333333,75,84.9
+Zosterops japonicus,11.25,10.5,NA
+Acanthiza_katherina,7.2,6.7,6.8
+Aethopyga_christinae,5.2,NA,NA
+Aimophila_sumichrasti,29.43,28.6,30.3
+Aimophila_notosticta,27.1,NA,27.1
+Amazona_viridigenalis,316,NA,NA
+Anas_cyanoptera,377.45,365.25,395.5
+Buteo_oreophilus,699.99,NA,NA
+Calocitta_formosa,210,NA,NA
+Catharus_occidentalis,26.2,NA,26.2
+Charadrius_marginatus,48.3,46.6,46.1
+Colinus_cristatus,134.45,131,138
+Colius_striatus,51.1,55.5,54
+Coryphospingus_pileatus,15.3,NA,NA
+Cossypha_archeri,22.8,23.5,22.5
+Culicicapa_helianthea,8.4,NA,NA
+Cyanocorax_sanblasianus,109,NA,NA
+Dicrurus_adsimilis,40.3,46,NA
+Diuca_speculifera,38.84,NA,NA
+Elaenia_frantzii,19.6,NA,NA
+Elaenia_flavogaster,24.8,24.1,24.3
+Empidonax_affinis,11.3,NA,11.3
+Euplectes_psammocromius,35.5,NA,35.5
+Eurystomus_glaucurus,110,104,110.5
+Geococcyx_velox,179.89,175.75,187.25
+Coragyps_atratus,1881.69,2103.75,2065
+Haematopus_palliatus,601.45,616,554.5
+Hirundo_tahitica,17.8,16.5,NA
+Hylocharis_leucotis,3.39,3.25,3.6
+Icterus_pustulatus,36.78,NA,NA
+Ictinia_plumbea,249.9,256.5,241
+Laniarius_aethiopicus,49.44,48,56
+Lessonia_oreas,13.8,NA,13.8
+Megaceryle_torquata,317,293,300
+Milvago_chimachima,315.21,332.75,304
+Mimus_gilvus,51.99,53.5,56
+Molothrus_bonariensis,41.49,34.1,40
+Myadestes_obscurus,50.44,49.9,51
+Pachycephala_melanura,23.8,29.2125,30.2375
+Parula_pitiayumi,6.82,6.6,7.2
+Pelecanus_occidentalis,3427.84,3161,3702
+Phaethon_lepturus,328.04,392,NA
+Phoebastria_nigripes,3188.41,2990,3400
+Phrygilus_plebejus,14.68,12.6,NA
+Phylloscopus_laetus,9.54,9.2,9.9
+Picoides_stricklandi,40.87,42,38.1
+Pipilo_albicollis,46.4,NA,NA
+Polioptila_plumbea,6,6.5,6.9
+Pycnonotus_barbatus,32.1,35,38.5
+Hemispingus_superciliaris,14,NA,NA
+Rallus_longirostris,259.35,266.5,323
+Riparia_paludicola,13.5,11.45,11.2
+Rollandia_microptera,706,NA,NA
+Saltator_grossus,44.2,NA,NA
+Sayornis_nigricans,18.63,17.75,19.475
+Serinus_sulphuratus,27.9,18.95,18.2
+Serpophaga_cinerea,8.3,7.7,NA
+Sporophila_nigricollis,9.6,8.5,9
+Stelgidopteryx_ruficollis,16.1,NA,NA
+Sterna_sandvicensis,199.83,237,296
+Henicorhina_leucosticta,14.18,13.7,15.025
+Todiramphus_chloris,66.09,65.625,55.6
+Toxostoma_ocellatum,84.29,NA,NA
+Toxostoma_guttatum,52.8,NA,NA
+Tregellasia_leucops,15.57,15.025,16.5
+Trochocercus_nitens,11.8,11.9,11.8
+Turdus_tephronotus,49.4,51,48.7
+Turdus_rufitorques,72,NA,NA
+Zosterops_montanus,10.5,8,NA

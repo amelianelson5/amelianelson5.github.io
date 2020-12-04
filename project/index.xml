@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on My Website</title>
+    <link>/project/</link>
+    <description>Recent content in Projects on My Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Project 1: Exploratory Data Analysis</title>
+      <link>/project/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>The two datasets I am using for this project contain information about nontropical bird species. One dataset (&amp;quot;nontropical_bird_data.csv&amp;quot;) came from a study performed at Michigan State University that compares characteristics from nontropical bird species. Such variables include scientific name, the number collected, latitude, diet type (from five categories), litter/clutch size, maximum longevity in years, and the seasonal variation in temperature. The second database came from a bird database website (birdlife.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>Introduction My data comes from a study that tested if using formalin to preserve fish in biological collection causes differents to their size and weight over time. Since many biologists rely on these collections to conduct research, it is important to know that this method is reliable at accurately preserving collected fish. The main variables include fish sex, days since preservation, standard length, fork length, and weight. There are 1,008 observations in this data set.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,241 @@
+---
+title: "Project 2: Modeling, Testing, and Predicting"
+author: "Amelia Nelson"
+date: '11/22/2020'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+
+My data comes from a study that tested if using formalin to preserve fish in biological collection causes differents to their size and weight over time. Since many biologists rely on these collections to conduct research, it is important to know that this method is reliable at accurately preserving collected fish. The main variables include fish sex, days since preservation, standard length, fork length, and weight. There are 1,008 observations in this data set. 
+
+```{r}
+library(tidyverse)
+data <- read.csv("Delta_Smelt_formalin_preservation_Slater_etal_2020.csv")
+
+
+data1<-data%>%mutate(preservation_cat = case_when(preservation_day>1000 ~ "high",
+                                            preservation_day<=1000 & 100<=preservation_day ~ "med",
+                                            preservation_day<100 ~ "low"))
+```
+
+With this code, I have added another categorial variable that separates "preservation day" into three categories. 
+
+## Manova Test
+
+
+
+```{r}
+man<-manova(cbind(fork_length_mm, standard_length_mm, weight_g)~preservation_cat, data=data1)
+summary(man)
+summary.aov(man)
+pairwise.t.test(data1$standard_length_mm,data1$preservation_cat, p.adj="none")
+pairwise.t.test(data1$fork_length_mm,data1$preservation_cat, p.adj="none")
+pairwise.t.test(data1$weight_g,data1$preservation_cat, p.adj="none")
+## Assumptions
+library(rstatix)
+
+group <- data1$preservation_cat
+DVs <- data1 %>% select(fork_length_mm, standard_length_mm, weight_g)
+
+#Test multivariate normality for each group (null: assumption met)
+sapply(split(DVs,group), mshapiro_test)
+
+#If any p<.05, stop. If not, test homogeneity of covariance matrices
+
+#Box's M test (null: assumption met)
+box_m(DVs, group)
+#View covariance matrices for each group
+lapply(split(DVs,group), cov)
+```
+
+I have performed seven tests. There is a 0.302 chance that we have made a type I error. We should adjust the significance value to 0.007. However, there are still no significant differences with the adjusted significance value. This means that time since being preserved does not have an affect on these variables (which is a good thing!). However, when testing for multivariate normality for each group, we were not able to pass our assumptions.
+
+## Randomization Test
+
+```{r}
+rand_dist<-vector()
+for(i in 1:5000){
+  new<-data.frame(weight=sample(data1$weight_g),preservation_cat=data1$preservation_cat)
+  rand_dist[i]<-mean(new[new$preservation_cat=="low",]$weight)-   
+              mean(new[new$preservation_cat=="high",]$weight)}
+{hist(rand_dist,main="",ylab=""); abline(v = c(-0.0489, 0.0489),col="red")}
+mean(rand_dist>0.489 | rand_dist< -0.0489)
+
+
+data1%>%group_by(preservation_cat)%>%summarize(means=mean(weight_g))
+3.841306-3.792418
+
+
+
+```
+In this randomization test, the null hypothesis is that there is no difference in means between samples that have been preserved for a high amount of time vs those that have only been preserved for a short amount of time. The alternative hypothesis is that there is a difference. The results from our test show that acheiving the null hypthosis by chance is not all that unlikely. There is close to a .90 chance that this result could have been obtained by chance. You can clearly see this when looking at the mean differences between each preservation category: there is only a very small difference in size between those in the high and low class. 
+
+
+## Linear Regression
+```{r}
+library(lmtest)
+library(sandwich)
+data1$standard_length_mm_c <- data1$standard_length_mm - mean(data1$standard_length_mm, na.rm=T)
+mod<- lm(weight_g~standard_length_mm_c*sex, data=data1)
+summary(mod)
+
+data1 %>% filter(!is.na(weight_g), !is.na(standard_length_mm_c), !is.na(sex)) %>%
+  ggplot(aes(standard_length_mm_c, weight_g, color = sex)) + geom_point()+
+  geom_smooth(method="lm")
+#assumptions
+breaks <- seq(min(data1$weight_g), max(data1$weight_g, len=8))
+ggplot(data1, aes(weight_g, standard_length_mm_c)) + 
+  geom_point(alpha=.3) + 
+  theme_bw()+ geom_vline(xintercept=breaks, lty=2,color='gray50')
+resids<-lm(weight_g~standard_length_mm_c, data=data1)$residuals
+fitvals <- lm(weight_g~standard_length_mm_c, data=data1)$fitted.values
+ggplot()+geom_histogram(aes(resids),bins=10) # appears somewhat normal, with a few outliers at the upper end
+ks.test(resids, "pnorm", mean=0, sd(resids)) #we reject the null hypothesis of normality
+bptest(mod) # p < 0.05 we reject the null hypothesis of homoscedasticity
+#Adding robust standard errors
+coeftest(mod, vcov = vcovHC(mod))
+# R-squared
+sum((fitvals-mean(data1$weight_g))^2)/sum((data1$weight_g-mean(data1$weight_g))^2)
+```
+For samples of average standard length that are female, the predicted weight is 3.836. For every 1-unit increase in standard length, there is a 0.195 increase in predicted weight. For samples of an average standard length, those that are female are predicted to have a weight that is 0.1 gram lower than for males. The slope of standard length on weight for males is 0.02 lower than for females. The standard errors do not change much when using robust standard errors and everything remains significant. The results show that there are significant differences in predicted weight based on sex and standard length, and this difference is slight more stark for females compared to males (as seen by the steeper slope for females in the graph). Our model explains about 88% of variation. 
+
+# Bootstrap Sample Errors
+## Classification diagnostics function
+```{r}
+class_diag<-function(probs,truth){
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  f1=2*(sens*ppv)/(sens+ppv)
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE){
+    truth<-as.numeric(truth)-1}
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,f1,auc)
+}
+```
+
+
+```{r}
+fit<-lm(weight_g~standard_length_mm_c*sex,data=data1) 
+resids<-fit$residuals 
+fitted<-fit$fitted.values 
+resid_resamp<-replicate(5000,{
+  new_resids<-sample(resids,replace=TRUE) #resample resids w/ replacement
+  data1$new_y<-fitted+new_resids #add new resids to yhats to get new "data"
+  fit<-lm(new_y~standard_length_mm_c*sex,data=data1) #refit model
+coef(fit) #save coefficient estimates (b0, b1, etc)
+})
+resid_resamp%>%t%>%as.data.frame%>%summarize_all(sd)
+```
+
+Like the robust standard errors, the bootstrap standard errors show very little difference compared to our original standard errors. As such, the p-values are likely to stay similar and significant.
+
+## Logistic Regression
+```{r}
+data1$weight_g_c <- data1$weight_g - mean(data1$weight_g, na.rm=T)
+log.fit <- glm(sex~weight_g_c+standard_length_mm_c, data=data1, family="binomial")
+coeftest(log.fit) 
+exp(coef(log.fit))
+prob <- predict(log.fit, type="response")
+table(predict=as.numeric(prob>.5),truth=data1$sex)%>%addmargins
+class_diag(prob, data1$sex)
+data1$logit<-predict(log.fit,type="link")
+data1%>%ggplot()+geom_density(aes(logit,color=sex,fill=sex), alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab("predictor (logit)")
+# ROC curve
+library(plotROC)
+data1$prob<-predict(log.fit,type="response")
+ROC<-ggplot(data1)+geom_roc(aes(d=sex,m=prob), n.cuts=0)
+ROC
+
+```
+In our logistic regression, the predicted odds of being male for those with an average standard length and weight is 1.015. Controlling for standard length, the odds significantly change by a factor of 0.477 with every 1-unit increase in weight. Controlling for weight, the odds change by a factor of 0.943 for every 1-unit increase in standard length. The accuracy of our model is about 76%. Sensitivity is 87% and specificity is about 63% (somewhat low, meaning that true negatives are low). Precision is about 72% meaning that 72% of individuals classified as male were actually male. Our AUC is 0.81, which means that although there is some error, our model is fairly good at predicting male vs female. Our ggplot shows that there is some overlap between the predictors for male and female, which explains the error we see. 
+
+## Logistic Regression II
+```{r}
+data2<-data1%>%select(-flag,-process_date,-processor_id, -total_length_mm, -logit, -prob, -specimen_no, -standard_length_mm, -weight_g)
+data2<-data2%>%na.omit()
+log.fit2 <- glm(sex~., data=data2, family="binomial")
+coeftest(log.fit2) 
+exp(coef(log.fit2))
+prob <- predict(log.fit2, type="response")
+class_diag(prob, data2$sex)
+```
+This model shows similar relationships on sex than our last one (with weight being a significant predictor). The accuracy of our model is about 76%. Sensitivity is 87% and specificity is about 64% (somewhat low, meaning that true negatives are low). Precision is about 73% meaning that 73% of individuals classified as male were actually male. Our AUC is 0.82, which is very similar to the AUC of our last logistic model and a relatively good value for considering the accuracy of this model.
+
+## 10-fold CV
+```{r}
+k=10
+
+data <- data2 %>% sample_frac #put rows of dataset in random order
+folds <- ntile(1:nrow(data),n=10) #create fold labels
+
+diags<-NULL
+for(i in 1:k){
+  train <- data[folds!=i,] #create training set (all but fold i)
+  test <- data[folds==i,] #create test set (just fold i)
+  truth <- test$sex #save truth labels from fold i
+  
+  fit <- glm(sex~(.)^2, data=train, family="binomial")
+  probs <- predict(fit, newdata=test, type="response")
+  
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)
+```
+Most of our classification diagnostics did not change very much when doing 10-fold CV. One notable difference is the slightly higher specificity for this CV (increasing to 72% from 64% from the in-sample metrics). However, the AUC did not substantial decrease for our CV. The AUC remained at practically the same value, meaning that there is likely very little overfitting in our model.
+
+## Lasso
+```{r}
+library(glmnet)
+y<-as.matrix(data2$sex)
+preds<-model.matrix(log.fit2)[,-1]
+cv <- cv.glmnet(preds,y, family="binomial")
+lasso_fit<-glmnet(preds,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso_fit)
+
+# 10-fold CV with lasso selected variables
+k=10
+
+data <- data2 %>% sample_frac #put rows of dataset in random order
+folds <- ntile(1:nrow(data),n=10) #create fold labels
+
+diags<-NULL
+for(i in 1:k){
+  train <- data[folds!=i,] #create training set (all but fold i)
+  test <- data[folds==i,] #create test set (just fold i)
+  truth <- test$sex #save truth labels from fold i
+  
+  fit <- glm(sex~standard_length_mm_c+weight_g_c, data=train, family="binomial")
+  probs <- predict(fit, newdata=test, type="response")
+  
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)
+```
+
+The variables contained after performing lasso were standard length and weight. This makes sense because weight had a significant effect on the predicted odds of being male and standard length had a nearly signficant effect on the odds of being male. When we perform a 10-fold CV using only the variables that lasso selected, the AUC is 0.814. It does not change very much compared to the AUC from our previous 10-fold CV and the in-sample metrics. This confirms that our original model does not have a lot of overfitting. 
+
+

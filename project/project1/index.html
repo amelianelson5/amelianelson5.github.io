@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Amelia Nelson" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 1: Exploratory Data Analysis</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project1/">Project 1: Exploratory Data Analysis</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<hr />
+<p>The two datasets I am using for this project contain information about nontropical bird species. One dataset (&quot;nontropical_bird_data.csv&quot;) came from a study performed at Michigan State University that compares characteristics from nontropical bird species. Such variables include scientific name, the number collected, latitude, diet type (from five categories), litter/clutch size, maximum longevity in years, and the seasonal variation in temperature. The second database came from a bird database website (birdlife.org) and contains information about bird body size. This includes average adult body mass, average female body mass, and average male body mass for a variety of tropical and nontropical bird species.</p>
+<p>As an environmental science major studying ecology, I am very interested in discovering relationships between and among animal species. There are so many questions that can be asked using these variables. For example, we can look at the relationship between bird size and diet type. I expect the larger birds to be the ones that consume vertebrates, fish, and scavenge, since these food items are easier to eat for larger animals (compared to seeds and fruit). I also expect the larger birds to have a longer lifespan and smaller litter size. Larger animals tend to put less time into reproduction (which is very energetically costly) and instead put energy into raising only a few offspring, thus maximizing the chance that these individuals will survive longer.</p>
+<pre class="r"><code>library(tidyverse)
+spp &lt;- read.csv(&quot;nontropical_bird_data.csv&quot;)
+mass &lt;- read.csv(&quot;bird_body_mass.csv&quot;)
+glimpse(spp)</code></pre>
+<pre><code>## Rows: 68
+## Columns: 8
+## $ nontropical_binomial                &lt;fct&gt; Acanthiza pusilla, Aethopyga goul…
+## $ nontropical_n                       &lt;int&gt; 18, 23, 75, 276, 22, 172, 49, 26,…
+## $ nontropical_lat                     &lt;dbl&gt; 32.80000, 22.16750, 27.24251, 31.…
+## $ nontropical_cv_logmass              &lt;dbl&gt; 0.12791079, 0.05951148, 0.0312976…
+## $ nontropical_Diet.5Cat               &lt;fct&gt; Invertebrate, Omnivore, PlantSeed…
+## $ nontropical_litter_or_clutch_size_n &lt;dbl&gt; 2.700, NA, 4.000, 3.725, 2.000, 1…
+## $ nontropical_maximum_longevity_y     &lt;dbl&gt; NA, NA, NA, 5.083333, 25.800000, …
+## $ nontropical_seasonal_var_temp       &lt;dbl&gt; 364.8777, 444.7556, 558.2608, 522…</code></pre>
+<pre class="r"><code>glimpse(mass)</code></pre>
+<pre><code>## Rows: 136
+## Columns: 4
+## $ species_name       &lt;fct&gt; Acanthiza pusilla, Aethopyga gouldiae, Aimophila c…
+## $ adult_body_mass_g  &lt;dbl&gt; 7.6000, 6.1250, 15.3000, 18.7500, 302.0000, 398.50…
+## $ female_body_mass_g &lt;dbl&gt; 7.500, 5.000, 15.000, 17.925, NA, 395.000, 945.750…
+## $ male_body_mass_g   &lt;dbl&gt; 8.60, 7.25, 15.00, 19.30, NA, 402.00, 781.00, NA, …</code></pre>
+<div id="joining-data" class="section level1">
+<h1>Joining data</h1>
+<p>In this step, we are joining these two datasets by the common variable of the scientific name (&quot;nontropical_binomial&quot; for the species dataset, &quot;species_name&quot; for the body mass dataset). We are doing a right join because we want to keep all of the data in the nontropical species dataset (ie, all of these species). However we are doing a right join because I prefer to keep the name &quot;species_name&quot; for each species, as this is easier to work with than &quot;nontropical_binomial&quot;. By joining these two datasets like this, we lose the bird species that were in the body mass dataset that don't have a match in the nontropical species dataset (including all the tropical species). The species dataset maintained all 68 observations. The bird body mass dataset lost 68 observations (out of 136) that were not in the species dataset.</p>
+<pre class="r"><code>birddata &lt;- right_join(mass, spp, by = c(species_name = &quot;nontropical_binomial&quot;))</code></pre>
+</div>
+<div id="tidy" class="section level1">
+<h1>TIDY</h1>
+<p>Since my datasets were already tidy, I am simplying making them untidy by spliting up the Diet type into two columns. Pivot wider fixes this mistake by making the diet category variable be its own column again.</p>
+<pre class="r"><code>birddata %&gt;% pivot_longer(contains(&quot;Diet&quot;))  #splits diet variable into two different columns</code></pre>
+<pre><code>## # A tibble: 68 x 12
+##    species_name adult_body_mass… female_body_mas… male_body_mass_g nontropical_n
+##    &lt;fct&gt;                   &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;         &lt;int&gt;
+##  1 Acanthiza p…             7.6               7.5             8.6             18
+##  2 Aethopyga g…             6.12              5               7.25            23
+##  3 Aimophila c…            15.3              15              15               75
+##  4 Aimophila r…            18.8              17.9            19.3            276
+##  5 Amazona fin…           302                NA              NA               22
+##  6 Anas discors           398.              395             402              172
+##  7 Buteo buteo            878.              946.            781               49
+##  8 Calocitta c…           224.               NA              NA               26
+##  9 Catharus gu…            30.6              NA              NA             1422
+## 10 Charadrius …            42.3              46.1            44              122
+## # … with 58 more rows, and 7 more variables: nontropical_lat &lt;dbl&gt;,
+## #   nontropical_cv_logmass &lt;dbl&gt;, nontropical_litter_or_clutch_size_n &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y &lt;dbl&gt;, nontropical_seasonal_var_temp &lt;dbl&gt;,
+## #   name &lt;chr&gt;, value &lt;fct&gt;</code></pre>
+<pre class="r"><code>birddata %&gt;% pivot_longer(contains(&quot;Diet&quot;)) %&gt;% pivot_wider(names_from = &quot;name&quot;, 
+    values_from = &quot;value&quot;)  #fixes the mistake by putting the diet types all in one column.</code></pre>
+<pre><code>## # A tibble: 68 x 11
+##    species_name adult_body_mass… female_body_mas… male_body_mass_g nontropical_n
+##    &lt;fct&gt;                   &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;         &lt;int&gt;
+##  1 Acanthiza p…             7.6               7.5             8.6             18
+##  2 Aethopyga g…             6.12              5               7.25            23
+##  3 Aimophila c…            15.3              15              15               75
+##  4 Aimophila r…            18.8              17.9            19.3            276
+##  5 Amazona fin…           302                NA              NA               22
+##  6 Anas discors           398.              395             402              172
+##  7 Buteo buteo            878.              946.            781               49
+##  8 Calocitta c…           224.               NA              NA               26
+##  9 Catharus gu…            30.6              NA              NA             1422
+## 10 Charadrius …            42.3              46.1            44              122
+## # … with 58 more rows, and 6 more variables: nontropical_lat &lt;dbl&gt;,
+## #   nontropical_cv_logmass &lt;dbl&gt;, nontropical_litter_or_clutch_size_n &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y &lt;dbl&gt;, nontropical_seasonal_var_temp &lt;dbl&gt;,
+## #   nontropical_Diet.5Cat &lt;fct&gt;</code></pre>
+</div>
+<div id="exploring-the-dataset" class="section level1">
+<h1>Exploring the dataset</h1>
+<pre class="r"><code>birddata &lt;- birddata %&gt;% mutate(mass_difference = male_body_mass_g - 
+    female_body_mass_g) %&gt;% arrange(-mass_difference)  #creating a new variable that is the difference in male and female body mass for each species
+birddata %&gt;% filter(nontropical_Diet.5Cat == &quot;Omnivore&quot;) %&gt;% 
+    select(c(&quot;species_name&quot;, &quot;adult_body_mass_g&quot;)) %&gt;% arrange(-adult_body_mass_g)</code></pre>
+<pre><code>##                 species_name adult_body_mass_g
+## 1             Rallus elegans         360.50000
+## 2            Amazona finschi         302.00000
+## 3          Calocitta colliei         223.50000
+## 4        Cyanocorax beecheii         194.00000
+## 5              Turdus merula         102.00000
+## 6         Turdus migratorius          78.78333
+## 7      Toxostoma curvirostre          78.70000
+## 8       Dicrurus macrocercus          48.50000
+## 9          Mimus polyglottos          48.50000
+## 10       Myadestes townsendi          33.47500
+## 11        Aimophila ruficeps          18.75000
+## 12          Elaenia albiceps          15.55000
+## 13 Coryphospingus cucullatus          14.10000
+## 14        Aethopyga gouldiae           6.12500</code></pre>
+<p>When examining my data, I made a new variable that calculates the difference in male and female body mass for each species. We can see from this that the species with the largest difference in mass between males and females are also the species with the largest adult body mass. I also filtered by birds that are the omnivore diet type and can see that Rallus elegans is the omnivore with the largest body mass and that the range of body masses across omnivores is about 354.4 grams.</p>
+</div>
+<div id="summary-stats" class="section level1">
+<h1>Summary Stats!</h1>
+<pre class="r"><code>birds2 &lt;- birddata %&gt;% rename_all(function(x) str_replace_all(x, 
+    &quot;_&quot;, &quot;.&quot;))
+birdsizes &lt;- birddata %&gt;% mutate(size_categories = ifelse(adult_body_mass_g &gt; 
+    1000, &quot;Large&quot;, &quot;Small&quot;))  #creating a categorical variable that marks if a bird is large (&gt;1000 grams), or small (&lt;1000 grams)
+
+birddata %&gt;% group_by(nontropical_Diet.5Cat) %&gt;% summarise(count = n())</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   nontropical_Diet.5Cat count
+##   &lt;fct&gt;                 &lt;int&gt;
+## 1 FruiNect                  4
+## 2 Invertebrate             31
+## 3 Omnivore                 14
+## 4 PlantSeed                10
+## 5 VertFishScav              9</code></pre>
+<pre class="r"><code>birddata %&gt;% group_by(nontropical_Diet.5Cat) %&gt;% summarize_if(is.numeric, 
+    list(Q2 = quantile), probs = 0.5, na.rm = T)  #finding the median for each numeric variable by diet type</code></pre>
+<pre><code>## # A tibble: 5 x 11
+##   nontropical_Die… adult_body_mass… female_body_mas… male_body_mass_…
+##   &lt;fct&gt;                       &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1 FruiNect                     21.0             10.5              3.5
+## 2 Invertebrate                 19.6             26.9             34.2
+## 3 Omnivore                     63.6             46.4             51  
+## 4 PlantSeed                    36.0             34.6             44.6
+## 5 VertFishScav                376              344.             319. 
+## # … with 7 more variables: nontropical_n_Q2 &lt;dbl&gt;, nontropical_lat_Q2 &lt;dbl&gt;,
+## #   nontropical_cv_logmass_Q2 &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n_Q2 &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y_Q2 &lt;dbl&gt;,
+## #   nontropical_seasonal_var_temp_Q2 &lt;dbl&gt;, mass_difference_Q2 &lt;dbl&gt;</code></pre>
+<pre class="r"><code>birdsizes %&gt;% group_by(nontropical_Diet.5Cat, size_categories) %&gt;% 
+    summarize_if(is.numeric, list(mean = mean, sd = sd, var = var, 
+        min = min, max = max, distinct = n_distinct))</code></pre>
+<pre><code>## # A tibble: 7 x 62
+## # Groups:   nontropical_Diet.5Cat [5]
+##   nontropical_Die… size_categories adult_body_mass… female_body_mas…
+##   &lt;fct&gt;            &lt;chr&gt;                      &lt;dbl&gt;            &lt;dbl&gt;
+## 1 FruiNect         Small                       21.7               NA
+## 2 Invertebrate     Large                     3050               2990
+## 3 Invertebrate     Small                       53.9               NA
+## 4 Omnivore         Small                      109.                NA
+## 5 PlantSeed        Small                       79.5               NA
+## 6 VertFishScav     Large                     7465.              6535
+## 7 VertFishScav     Small                      408.                NA
+## # … with 58 more variables: male_body_mass_g_mean &lt;dbl&gt;,
+## #   nontropical_n_mean &lt;dbl&gt;, nontropical_lat_mean &lt;dbl&gt;,
+## #   nontropical_cv_logmass_mean &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n_mean &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y_mean &lt;dbl&gt;,
+## #   nontropical_seasonal_var_temp_mean &lt;dbl&gt;, mass_difference_mean &lt;dbl&gt;,
+## #   adult_body_mass_g_sd &lt;dbl&gt;, female_body_mass_g_sd &lt;dbl&gt;,
+## #   male_body_mass_g_sd &lt;dbl&gt;, nontropical_n_sd &lt;dbl&gt;,
+## #   nontropical_lat_sd &lt;dbl&gt;, nontropical_cv_logmass_sd &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n_sd &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y_sd &lt;dbl&gt;,
+## #   nontropical_seasonal_var_temp_sd &lt;dbl&gt;, mass_difference_sd &lt;dbl&gt;,
+## #   adult_body_mass_g_var &lt;dbl&gt;, female_body_mass_g_var &lt;dbl&gt;,
+## #   male_body_mass_g_var &lt;dbl&gt;, nontropical_n_var &lt;dbl&gt;,
+## #   nontropical_lat_var &lt;dbl&gt;, nontropical_cv_logmass_var &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n_var &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y_var &lt;dbl&gt;,
+## #   nontropical_seasonal_var_temp_var &lt;dbl&gt;, mass_difference_var &lt;dbl&gt;,
+## #   adult_body_mass_g_min &lt;dbl&gt;, female_body_mass_g_min &lt;dbl&gt;,
+## #   male_body_mass_g_min &lt;dbl&gt;, nontropical_n_min &lt;int&gt;,
+## #   nontropical_lat_min &lt;dbl&gt;, nontropical_cv_logmass_min &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n_min &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y_min &lt;dbl&gt;,
+## #   nontropical_seasonal_var_temp_min &lt;dbl&gt;, mass_difference_min &lt;dbl&gt;,
+## #   adult_body_mass_g_max &lt;dbl&gt;, female_body_mass_g_max &lt;dbl&gt;,
+## #   male_body_mass_g_max &lt;dbl&gt;, nontropical_n_max &lt;int&gt;,
+## #   nontropical_lat_max &lt;dbl&gt;, nontropical_cv_logmass_max &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n_max &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y_max &lt;dbl&gt;,
+## #   nontropical_seasonal_var_temp_max &lt;dbl&gt;, mass_difference_max &lt;dbl&gt;,
+## #   adult_body_mass_g_distinct &lt;int&gt;, female_body_mass_g_distinct &lt;int&gt;,
+## #   male_body_mass_g_distinct &lt;int&gt;, nontropical_n_distinct &lt;int&gt;,
+## #   nontropical_lat_distinct &lt;int&gt;, nontropical_cv_logmass_distinct &lt;int&gt;,
+## #   nontropical_litter_or_clutch_size_n_distinct &lt;int&gt;,
+## #   nontropical_maximum_longevity_y_distinct &lt;int&gt;,
+## #   nontropical_seasonal_var_temp_distinct &lt;int&gt;,
+## #   mass_difference_distinct &lt;int&gt;</code></pre>
+<pre class="r"><code># grouping by both diet type and size and calculating several
+# summary stats
+
+birds2 %&gt;% summarize_if(is.numeric, list(mean = mean, min = min, 
+    max = max)) %&gt;% pivot_longer(c(1:30)) %&gt;% separate(name, 
+    into = c(&quot;var&quot;, &quot;stat&quot;), sep = (&quot;_&quot;)) %&gt;% pivot_wider(names_from = &quot;stat&quot;, 
+    values_from = &quot;value&quot;) %&gt;% na.omit</code></pre>
+<pre><code>## # A tibble: 4 x 4
+##   var                        mean    min      max
+##   &lt;chr&gt;                     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+## 1 adult.body.mass.g      366.     3.45   8800    
+## 2 nontropical.n          163.     9      1831    
+## 3 nontropical.lat         29.3    0.5      57    
+## 4 nontropical.cv.logmass   0.0545 0.0179    0.179</code></pre>
+<pre class="r"><code># creating easier to read table that lists the mean, min, and
+# max for each numeric variable</code></pre>
+<p>I performed several rounds of summary stats to explore my data. First, I used count to figure out the number of birds in each diet type, with invertebrates being the most abundant (31) and fruit/nectar being the least abundant (4). I also used the quantile function to determine the second quantile (aka the median) for all of the numeric variables. This showed that the median body mass for vert/fish/scavengers is by far the highest (376 grams), beating out the second highest (omnivores) by a significant amount. I also used group_by to determine the mean, sd, var, min, and max for all of the 5 diet categories. Additionally, I created a new categorical variable that assigns large or small to species based on body type. I calculated the same summary stats using this grouping as well. Some interesting results from this analysis include the fact that there are no large birds in the diet categories Fruit/nectar, omnivore, or plant/seed. I also noticed from this analysis that the large vert/fish/scavengers were found at a higher latitude (on average) than the small birds in this diet category. Finally, I used pivot to make a table of the mean, min, and max of all numeric variables for every species. These results highlighted the large variety in many of my numeric variables. For instance, the largest bird was 8800 grams, whereas the smallest was only 3.45 grams. Likewise, the largest number of birds found was 1831 birds, whereas the smallest was 9 birds. There was also a large range of latitudes studied, with the average being about 30 degrees (close to where Austin is).</p>
+</div>
+<div id="plots" class="section level1">
+<h1>Plots</h1>
+<div id="correlation-heatmap" class="section level2">
+<h2>Correlation HeatMap</h2>
+<pre class="r"><code>cormap &lt;- birddata %&gt;% select_if(is.numeric) %&gt;% cor(use = &quot;pair&quot;)
+cormap %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;% pivot_longer(-1, 
+    &quot;var2&quot;, values_to = &quot;correlation&quot;) %&gt;% ggplot(aes(var1, var2, 
+    fill = correlation)) + geom_tile() + scale_fill_gradient2(low = &quot;red&quot;, 
+    mid = &quot;white&quot;, high = &quot;blue&quot;) + geom_text(aes(label = round(correlation, 
+    2)), color = &quot;black&quot;, size = 2) + theme(axis.text.x = element_text(angle = 90, 
+    hjust = 1)) + coord_fixed() + ggtitle(&quot;Correlation Heatmap for Bird Species Data&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /> Using this correlation heat map, we can see the correlation between each numeric variable. Besides the obvious high correlation between the body size variables, there was also high correlation between latitude and seasonal variabiality in temperature. There was also relatively high correlation between maximum longevity and the body size variables (as I had predicted).</p>
+</div>
+<div id="plot-1" class="section level2">
+<h2>Plot 1</h2>
+<pre class="r"><code>birdsizes &lt;- birddata %&gt;% mutate(size_categories = ifelse(adult_body_mass_g &gt; 
+    1000, &quot;Large&quot;, &quot;Small&quot;))
+ggplot(birddata, aes(adult_body_mass_g, nontropical_maximum_longevity_y)) + 
+    geom_point(size = 3, aes(color = nontropical_Diet.5Cat)) + 
+    scale_y_continuous(name = &quot;Maximum Longevity (years)&quot;, breaks = seq(0, 
+        60, 10)) + scale_x_continuous(name = &quot;Body Mass (grams)&quot;) + 
+    ggtitle(&quot;Body Mass (grams) by Maximum Longevity (years)&quot;) + 
+    theme_bw()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /> In this plot, we can see that there is some variation in maximum longevity at small body sizes. However, all birds that are greater than 2500 grams have a much long maximum longevity (45-60 years). Furthermore, these species tend to be the ones that consume Vertebrates, Fish, or are scavengers. There is also one invertebrate consumer that has a relative high body mass, however, there is a wide variety of body sizes for the invertebrates. Although there is one invertebrate with &gt;2500 gram body size, there are also many that are only a few grams large.</p>
+</div>
+<div id="plot-2" class="section level2">
+<h2>Plot 2</h2>
+<pre class="r"><code>ggplot(birdsizes, aes(nontropical_Diet.5Cat, adult_body_mass_g, 
+    fill = size_categories)) + geom_bar(stat = &quot;summary&quot;, fun = mean) + 
+    scale_y_continuous(name = &quot;Body Mass (grams)&quot;) + scale_x_discrete(name = &quot;Diet Type&quot;) + 
+    geom_errorbar(stat = &quot;summary&quot;, fun.data = mean_se, width = 0.5) + 
+    scale_fill_ordinal() + ggtitle(&quot;Body Mass of 5 different Bird Diet categories&quot;) + 
+    theme_minimal()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>In this plot, I have illustrated the body sizes of each diet type. I also have shown the amount of total body mass composed of the large birds (adult body mass &gt;1000) and the small birds (adult body size &lt; 1000). This plot shows that the largest birds consume invertebrates or vertibrate/fish/scavengers. Furthermore, for these two diet groups, the large birds composed an overwhelming majority of the total body mass. It is interesting to view this plot keeping in mind the results of our summary stats. In our summary stats, we figured out that omnivores had the second highest median body size (behind vert/fish/scavengers). However, in this plot it appears that invertebrates are the second highest. We can now see that one or two large invertebrate eaters are significantly influencing the the total body mass of this collective group. I also added error bars to my bar chart. For the smaller size categories there is much less variability as compared to the larger body sizes. This makes sense between there is a greater absolute difference in the body sizes of the larger birds.</p>
+</div>
+<div id="plot-3" class="section level2">
+<h2>Plot 3</h2>
+<pre class="r"><code>ggplot(birddata, aes(nontropical_seasonal_var_temp, nontropical_lat, 
+    color = nontropical_Diet.5Cat)) + geom_point() + theme_dark() + 
+    scale_y_continuous(name = &quot;Latitude&quot;) + scale_x_continuous(name = &quot;Seasonal Variability in Temperature&quot;) + 
+    ggtitle(&quot;Seasonal Variability in Bird&#39;s Temperature at different Latitudes&quot;) + 
+    scale_fill_gradient2()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /> In this plot, I plot seasonal variability in temperature against latitude. As one can see, these two varibles seem highly correlated, with more variable temperatures at higher latitudes. This makes sense because at higher latitudes, there are larger, more stark differences in temperature between summer and winter. At lower latitudes (as you get closer to the tropics) temperature stays relatively constant throughout the year.</p>
+<p>I also colored the points by diet types. There does not seem to be a correlation in diet types and latitude or seasonal variability in temperature.</p>
+</div>
+</div>
+<div id="pam-clustering" class="section level1">
+<h1>PAM Clustering</h1>
+<pre class="r"><code>clust &lt;- birddata %&gt;% select_if(is.numeric) %&gt;% na.omit()  #creating a dataset that just has the numeric variables
+
+library(cluster)
+sil_width &lt;- vector()
+for (i in 2:10) {
+    kms &lt;- kmeans(clust, centers = i)
+    sil &lt;- silhouette(kms$cluster, dist(clust))
+    sil_width[i] &lt;- mean(sil[, 3])
+}
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># the optimal number of clusters, by the graph, is 2. It has
+# the highest silhouette width
+pam &lt;- clust %&gt;% pam(k = 2)
+pam  #this is my pam clustering</code></pre>
+<pre><code>## Medoids:
+##    ID adult_body_mass_g female_body_mass_g male_body_mass_g nontropical_n
+## 1   1            6129.5             4970.0           6665.0            41
+## 12  9              78.7               75.8             80.9           179
+##    nontropical_lat nontropical_cv_logmass nontropical_litter_or_clutch_size_n
+## 1         42.20000             0.03105560                                2.00
+## 12        30.44478             0.03592973                                3.62
+##    nontropical_maximum_longevity_y nontropical_seasonal_var_temp
+## 1                             54.0                      843.2392
+## 12                            10.8                      618.2004
+##    mass_difference
+## 1           1695.0
+## 12             5.1
+## Clustering vector:
+##  1  2  3  5  6  7  8 10 12 14 16 17 20 21 23 27 28 32 35 36 37 38 40 43 45 
+##  1  1  1  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2 
+## Objective function:
+##    build     swap 
+## 807.3475 807.3475 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>pamclust &lt;- clust %&gt;% mutate(cluster = as.factor(pam$clustering))  #saves the cluster solution to dataset
+pamclust %&gt;% group_by(cluster) %&gt;% summarize_if(is.numeric, mean, 
+    na.rm = T)</code></pre>
+<pre><code>## # A tibble: 2 x 11
+##   cluster adult_body_mass… female_body_mas… male_body_mass_g nontropical_n
+##   &lt;fct&gt;              &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;
+## 1 1                  5993.            5353.            6258.          21.3
+## 2 2                   178.             155.             149.         317. 
+## # … with 6 more variables: nontropical_lat &lt;dbl&gt;, nontropical_cv_logmass &lt;dbl&gt;,
+## #   nontropical_litter_or_clutch_size_n &lt;dbl&gt;,
+## #   nontropical_maximum_longevity_y &lt;dbl&gt;, nontropical_seasonal_var_temp &lt;dbl&gt;,
+## #   mass_difference &lt;dbl&gt;</code></pre>
+<pre class="r"><code>pamclust %&gt;% ggplot(aes(nontropical_litter_or_clutch_size_n, 
+    adult_body_mass_g, color = cluster)) + geom_point(size = 4) + 
+    ggtitle(&quot;Pam Clustering of Bird Litter Size and Adult Body Mass&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pamclust %&gt;% ggplot(aes(nontropical_litter_or_clutch_size_n, 
+    nontropical_maximum_longevity_y, color = cluster)) + geom_point(size = 4) + 
+    ggtitle(&quot;Pam Clustering of Bird Litter Size and Maximum Longevity&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>I performed PAM clustering on my data. By plotting silhouette widths at different potential k values, it is clear that using just 2 groups would maximize variability. As seen in many of my graphs, body mass provides a clear opportunity for differentiation, with the few very large birds in the dataset grouped together separate from the many small birds. You can also see in my clustering of max longevity by litter size that there are only a few birds that have a small litter size (about one or two offspring) and live for a long time. These can be grouped together against the many birds that have a relatively short longevity and large litter size.</p>
+</div>
+<div id="pca" class="section level1">
+<h1>PCA</h1>
+<pre class="r"><code>birds &lt;- birddata %&gt;% select_if(is.numeric) %&gt;% scale %&gt;% na.omit
+birds_pca &lt;- princomp(birds)
+summary(birds_pca, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2   Comp.3     Comp.4     Comp.5
+## Standard deviation     2.8822044 1.4854262 1.224678 1.08774713 0.78814186
+## Proportion of Variance 0.5633388 0.1496312 0.101710 0.08023724 0.04212393
+## Cumulative Proportion  0.5633388 0.7129700 0.814680 0.89491720 0.93704113
+##                            Comp.6     Comp.7      Comp.8       Comp.9 Comp.10
+## Standard deviation     0.68653438 0.58432488 0.336003015 0.0523507141       0
+## Proportion of Variance 0.03196279 0.02315415 0.007656079 0.0001858512       0
+## Cumulative Proportion  0.96900392 0.99215807 0.999814149 1.0000000000       1
+## 
+## Loadings:
+##                                     Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6
+## adult_body_mass_g                    0.532                0.160  0.126  0.259
+## female_body_mass_g                   0.460                0.123  0.150  0.330
+## male_body_mass_g                     0.440                0.140         0.154
+## nontropical_n                       -0.116  0.636 -0.532  0.524  0.131       
+## nontropical_lat                             0.304  0.158 -0.170 -0.339       
+## nontropical_cv_logmass              -0.159 -0.525         0.669 -0.194       
+## nontropical_litter_or_clutch_size_n -0.188  0.280  0.699  0.158  0.569 -0.191
+## nontropical_maximum_longevity_y      0.298        -0.194 -0.324  0.129 -0.439
+## nontropical_seasonal_var_temp               0.377  0.349        -0.583  0.287
+## mass_difference                      0.384         0.153  0.241 -0.328 -0.696
+##                                     Comp.7 Comp.8 Comp.9 Comp.10
+## adult_body_mass_g                                  0.774        
+## female_body_mass_g                                -0.486  0.627 
+## male_body_mass_g                                  -0.403 -0.768 
+## nontropical_n                                                   
+## nontropical_lat                      0.639  0.575               
+## nontropical_cv_logmass               0.428 -0.137               
+## nontropical_litter_or_clutch_size_n                             
+## nontropical_maximum_longevity_y      0.504 -0.553               
+## nontropical_seasonal_var_temp              -0.556               
+## mass_difference                     -0.356  0.166         0.128</code></pre>
+<pre class="r"><code>eigval &lt;- birds_pca$sdev^2  #variance explained by each PC
+varprop = round(eigval/sum(eigval), 2)  #cumulative variance explained
+
+ggplot() + geom_bar(aes(y = varprop, x = 1:10), stat = &quot;identity&quot;) + 
+    xlab(&quot;&quot;) + geom_path(aes(y = varprop, x = 1:10)) + geom_text(aes(x = 1:10, 
+    y = varprop, label = round(varprop, 2)), vjust = 1, col = &quot;white&quot;, 
+    size = 4) + scale_y_continuous(breaks = seq(0, 0.6, 0.2), 
+    labels = scales::percent) + scale_x_continuous(breaks = 1:10)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /> In this step, I am beginning to perform a PCA analysis on my data. I am able to see all of my principal components and how they affect the data. For instance, those that are high on PC1 have a large body mass, but relatively small litter/clutch size. I am also able to create a plot of my principal components and can see that the first three account for about 81% of the variability in my data.</p>
+<pre class="r"><code>birddf &lt;- data.frame(PC1 = birds_pca$scores[, 1], PC2 = birds_pca$scores[, 
+    2])
+ggplot(birddf, aes(PC1, PC2)) + geom_point()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(birddf, aes(PC1, PC2)) + geom_point() + stat_ellipse(data = birddf[birddf$PC1 &gt; 
+    0, ], aes(PC1, PC2), color = &quot;blue&quot;) + stat_ellipse(data = birddf[birddf$PC1 &lt; 
+    0, ], aes(PC1, PC2), color = &quot;blue&quot;) + stat_ellipse(data = birddf[birddf$PC2 &gt; 
+    1, ], aes(PC1, PC2), color = &quot;red&quot;) + stat_ellipse(data = birddf[birddf$PC2 &lt; 
+    -1, ], aes(PC1, PC2), color = &quot;red&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /> In this step, I am creating a plot to better understand the variability in my data. As you can see, there is not much variability with most bird species scoring in the middle of PC1 and PC2. Because of this, my ellipses grouping the data are overlapping.</p>
+<pre class="r"><code>library(factoextra)
+fviz_pca_biplot(birds_pca) + coord_fixed()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /> By mapping out PCA clustering (for PC1 and PC2), we can see that body mass causes a lot of variation, with the three largest birds scoring much higher on PC1 then all of the other birds. Most of these large birds, however, score similarly on PC2 (in the middle). For the small birds (ie, the ones that score low on PC1), there is a lot of variation on PC2, which includes differences in latitude, temperature variety, and litter/clutch size. Although many of the small birds score in the center of PC2, there are many notable outliers that are either very high or very low on PC2.</p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>
