@@ -1,0 +1,28 @@
+---
+title: Reticulate, the great translator
+author: ''
+date: '2020-12-08'
+slug: reticulate-the-great-translator
+categories: []
+tags: []
+description: ''
+---
+
+As someone new to both R and python, it can get confusing knowing which syntax goes with which language. Or I'll learn how to do something really cool in R and have know idea how to get the same result in Python!
+
+That's where reticulate comes in handy. This allows you to move back in forth between R and python.
+
+#Allow me to demonstrate:
+```{r}
+library(reticulate)
+riscool <- "I can use"
+```
+Here I've started with an R code chunk.
+
+```{python}
+pythonisalsocool = "reticulate"
+print(r.riscool,pythonisalsocool)
+```
+And now I've put in a python code at well, stiched them together and, voila! We've just used R and python together!
+
+Pretty cool, huh?

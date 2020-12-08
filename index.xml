@@ -6,7 +6,18 @@
     <description>Recent content on My Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Fri, 04 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 08 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reticulate, the great translator</title>
+      <link>/post/2020/12/08/reticulate-the-great-translator/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2020/12/08/reticulate-the-great-translator/</guid>
+      <description>As someone new to both R and python, it can get confusing knowing which syntax goes with which language. Or I&#39;ll learn how to do something really cool in R and have know idea how to get the same result in Python!
+That&#39;s where reticulate comes in handy. This allows you to move back in forth between R and python.
+Allow me to demonstrate: library(reticulate) riscool &amp;lt;- &amp;quot;I can use&amp;quot; Here I&#39;ve started with an R code chunk.</description>
+    </item>
+    
     <item>
       <title>My First Blog Post</title>
       <link>/post/2020/12/04/my-first-blog-post/</link>
@@ -27,17 +38,6 @@ print(5+5) ## 10  </description>
       
       <guid>/post/2020/12/04/should-i-open-the-windows-in-my-house/</guid>
       <description>Since we are in the midst of the COVID-19 pandemic, my roommates and I have been thinking a lot about air circulation. We got a CO2 monitor (since CO2 is a good proxy for how well the air is circulating in buildings) and we discovered that the CO2 in our house is pretty high! Not good! So we&#39;ve been opening up the windows a lot lately, but have struggled to find a good time to do so given Texas&#39;s unpredictable weather.</description>
-    </item>
-    
-    <item>
-      <title>Hello R Markdown</title>
-      <link>/post/2015/07/23/hello-r-markdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>/post/2015/07/23/hello-r-markdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
     </item>
     
     <item>
